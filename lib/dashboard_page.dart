@@ -534,10 +534,10 @@ class _DashboardPageState extends State<DashboardPage> {
           group: _lightingIcons.contains(d.icon)
               ? 'Lighting'
               : (_sc.value.groupOf[d.id] ?? d.group),
-          glyph: glyphFor(d.icon, d.on && d.available),
+          glyph: glyphFor(d.icon, d.on),
           label: d.name,
           caption: caption,
-          active: d.on && d.available,
+          active: d.on,
           outline: d.icon == 'heater',
           span: d.isLock ? 2 : 1,
           busy: _esp.isBusy(d.id),
