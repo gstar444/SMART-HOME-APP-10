@@ -604,7 +604,7 @@ class Esp32Controller extends ChangeNotifier
       // सारे कमांड खत्म होने के बाद एक बार असली state पढ़ें (बीच में पुराना state न आए)।
       if (_pending.isEmpty) {
         unawaited(
-          Future<void>.delayed(const Duration(milliseconds: 500), () {
+          Future<void>.delayed(const Duration(milliseconds: 300), () {
             if (_pending.isEmpty) return refresh();
           }),
         );
