@@ -768,7 +768,9 @@ class _DashboardPageState extends State<DashboardPage> {
                 final nav = Navigator.of(context, rootNavigator: true);
                 await FirebaseAuth.instance.signOut();
                 nav.pushAndRemoveUntil(
-                  MaterialPageRoute<void>(builder: (_) => const LoginPage()),
+                  MaterialPageRoute<void>(
+                    builder: (_) => LoginPage(settings: _sc),
+                  ),
                   (_) => false,
                 );
               },
