@@ -1,6 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'settings.dart';
+
+bool _hindiOf(BuildContext context) =>
+    context.read<SettingsController>().value.hindi;
+
+String _t(BuildContext context, String hi, String en) =>
+    _hindiOf(context) ? hi : en;
 
 final RegExp _usernameShape = RegExp(r'^[a-z0-9_]+(\.[a-z0-9_]+)*$');
 
@@ -91,7 +100,7 @@ Future<void> startUsernameChange(BuildContext context, User user) async {
   final picked = await showDialog<String>(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: const Text('यूज़रनेम बदलें'),
+      title: Text(_t(context, 'यूज़रनेम बदलें', 'Change username')),
       content: TextField(
         controller: ctrl,
         decoration: const InputDecoration(
@@ -102,11 +111,11 @@ Future<void> startUsernameChange(BuildContext context, User user) async {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx),
-          child: const Text('रद्द करें'),
+          child: Text(_t(context, 'रद्द करें', 'Cancel')),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(ctx, ctrl.text.trim().toLowerCase()),
-          child: const Text('सेव करें'),
+          child: Text(_t(context, 'सेव करें', 'Save')),
         ),
       ],
     ),

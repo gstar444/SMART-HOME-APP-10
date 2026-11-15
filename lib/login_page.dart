@@ -109,6 +109,12 @@ class _LoginPageState extends State<LoginPage> {
       if (e.code == 'account-not-found') {
         return 'इस ईमेल से अकाउंट नहीं मिला';
       }
+      if (e.code == 'account-not-found') {
+        return l.t(
+          'इस ईमेल से अकाउंट नहीं मिला',
+          'No account found with this email',
+        );
+      }
       return 'Error: ${e.code}';
     }
     return 'Error: $e';
