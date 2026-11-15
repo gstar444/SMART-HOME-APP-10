@@ -219,7 +219,6 @@ class Esp32Controller extends ChangeNotifier
   bool _adopting = false;
   int _failures = 0;
   String? _token;
-  DateTime _lastWrite = DateTime.fromMillisecondsSinceEpoch(0);
   DateTime? _lastSample;
 
   Esp32State? _state;
@@ -330,11 +329,23 @@ class Esp32Controller extends ChangeNotifier
   }
 
   // -------------------------------------------------------------- polling
+  /// ESP32 के नए state में, जो बटन अभी pending हैं उनका पुराना (optimistic) मान रखें।
+  Esp32State _mergePending(Esp32State next) {
+    final cur = _state;
+    if (cur == null) return next;
+    var out = next;
+    for (final d in cur.devices) {
+      if (_pending.contains(d.id)) {
+        out = out.withDevice(d.id, on: d.on);
+      }
+    }
+    return out;
+  }
+
   @override
   Future<void> refresh() async {
     if (_refreshing || _disposed) return;
     _refreshing = true;
-    final startedAt = DateTime.now();
     final deviceAtStart = _settings.value.activeDevice;
     try {
       final json = await _call('GET', 'state');
@@ -347,8 +358,12 @@ class Esp32Controller extends ChangeNotifier
         }
         // An answer that left before our latest write may still contain the old value, so it
         // must not overwrite the optimistic state.
-        if (!startedAt.isBefore(_lastWrite)) {
-          _state = next;
+        // जो बटन अभी कमांड में हैं, उनका optimistic मान न बदलें; बाकी ESP32 से मिलें।
+        final merged = _pending.isEmpty
+            ? next
+            : (_state == null ? next : _mergePending(next));
+        if (true) {
+          _state = merged;
           _inventory = BoardInventory.tryParse(json['inventory']);
           _liveState = BoardState.tryParse(json['state']);
           _recordSample(next);
@@ -569,7 +584,6 @@ class Esp32Controller extends ChangeNotifier
     if (before == null) return _tr.notConnected;
     _pending.add(busyKey);
     if (optimistic != null) _state = optimistic(before);
-    _lastWrite = DateTime.now();
     notifyListeners();
     try {
       final json = await _call('POST', name, body: body);
@@ -586,7 +600,6 @@ class Esp32Controller extends ChangeNotifier
       return _friendly(e);
     } finally {
       _pending.remove(busyKey);
-      _lastWrite = DateTime.now();
       if (!_disposed) notifyListeners();
       // सारे कमांड खत्म होने के बाद एक बार असली state पढ़ें (बीच में पुराना state न आए)।
       if (_pending.isEmpty) {
