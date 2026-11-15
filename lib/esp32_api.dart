@@ -379,7 +379,9 @@ class Esp32Controller extends ChangeNotifier
       if (deviceAtStart == _settings.value.activeDevice) {
         _failures++;
         _error = _friendly(e);
-        if (_failures >= 2) _online = false;
+        // टोकन गलत हो तो 'ऑफ़लाइन' नहीं, साफ़ संदेश दिखाएँ (ESP32 तो चालू है)।
+        final isAuth = e is ApiException && e.kind == ApiErrorKind.auth;
+        if (_failures >= 2 && !isAuth) _online = false;
       }
     } finally {
       _refreshing = false;
