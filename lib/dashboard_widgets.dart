@@ -603,38 +603,68 @@ class ClimateTile extends StatelessWidget {
     final dark = _isDark(context);
     final scheme = Theme.of(context).colorScheme;
     final muted = _muted(context);
+    final boxHeight = width * 0.88;
     return Opacity(
       opacity: dim ? 0.45 : 1,
-      child: Container(
+      child: SizedBox(
         width: width,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          color: dark ? const Color(0xFF1A2338) : const Color(0xFFF7F9FD),
-          border: Border.all(
-            color: dark ? const Color(0xFF263150) : const Color(0xFFD3DCEB),
-          ),
-        ),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.device_thermostat, size: 28, color: accent),
-            const SizedBox(width: 12),
-            Expanded(
+            Container(
+              width: width * 1.12,
+              height: boxHeight,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                color: dark ? const Color(0xFF1A2338) : const Color(0xFFF7F9FD),
+                border: Border.all(
+                  color: dark
+                      ? const Color(0xFF263150)
+                      : const Color(0xFFD3DCEB),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: dark ? 0.45 : 0.10),
+                    blurRadius: 0,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     tempText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.w600,
                       color: scheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(humText, style: TextStyle(fontSize: 12, color: muted)),
+                  const SizedBox(height: 3),
+                  Text(
+                    humText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 11, color: muted),
+                  ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 7),
+            Text(
+              label,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                height: 1.15,
+                fontWeight: FontWeight.w600,
+                color: scheme.onSurface,
               ),
             ),
           ],
