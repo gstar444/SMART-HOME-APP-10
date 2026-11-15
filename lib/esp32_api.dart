@@ -375,6 +375,7 @@ class Esp32Controller extends ChangeNotifier
         _online = true;
         _failures = 0;
         _error = null;
+        _authFailed = false;
         if (_settings.value.device.boardId.isEmpty && next.board.isNotEmpty) {
           unawaited(_adoptBoardId(next.board));
         }
