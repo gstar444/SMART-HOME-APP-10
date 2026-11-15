@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'settings.dart';
 
 import 'forgot_page.dart';
 
@@ -15,22 +16,7 @@ const Color _text = Color(0xFFE6E1E5);
 const Color _danger = Color(0xFFF2B8B5);
 const Color _ok = Color(0xFF9FD8A6);
 
-/// भाषा (true = हिंदी)। फ़ोन में सेव रहती है।
-final ValueNotifier<bool> loginHindi = ValueNotifier<bool>(true);
-
-Future<void> loadLoginLanguage() async {
-  final p = await SharedPreferences.getInstance();
-  loginHindi.value = p.getBool('login_hindi') ?? true;
-}
-
-Future<void> setLoginLanguage(bool hindi) async {
-  loginHindi.value = hindi;
-  final p = await SharedPreferences.getInstance();
-  await p.setBool('login_hindi', hindi);
-}
-
-String _t(BuildContext context, String hi, String en) =>
-    loginHindi.value ? hi : en;
+String _t(bool hindi, String hi, String en) => hindi ? hi : en;
 
 class _L {
   const _L(this.h);
@@ -41,7 +27,9 @@ class _L {
 final RegExp _usernameRe = RegExp(r'^[a-z0-9_]{3,20}$');
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({super.key, required this.settings});
+
+  final SettingsController settings;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -64,7 +52,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    loadLoginLanguage();
   }
 
   @override
@@ -265,7 +252,7 @@ class _LoginPageState extends State<LoginPage> {
             SnackBar(
               content: Text(
                 _t(
-                  context,
+                  widget.settings.value.hindi,
                   'आपका अकाउंट बन चुका है',
                   'Your account has been created',
                 ),
@@ -502,9 +489,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: loginHindi,
-      builder: (context, hindi, _) {
+    return ListenableBuilder(
+      listenable: widget.settings,
+      builder: (context, _) {
+        final hindi = widget.settings.value.hindi;
         final l = _L(hindi);
         return Scaffold(
           backgroundColor: _bg,
@@ -513,7 +501,9 @@ class _LoginPageState extends State<LoginPage> {
             elevation: 0,
             actions: [
               TextButton(
-                onPressed: () => setLoginLanguage(!hindi),
+                onPressed: () => widget.settings.update(
+                  widget.settings.value.copyWith(hindi: !hindi),
+                ),
                 child: Text(
                   hindi ? 'English' : 'हिंदी',
                   style: const TextStyle(color: _muted),
