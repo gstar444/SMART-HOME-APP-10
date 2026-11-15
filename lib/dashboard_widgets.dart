@@ -596,7 +596,7 @@ class ClimateTile extends StatelessWidget {
     final dark = _isDark(context);
     final scheme = Theme.of(context).colorScheme;
     final muted = _muted(context);
-    const boxHeight = 70.0;
+    const boxHeight = 85.0;
     return Opacity(
       opacity: dim ? 0.45 : 1,
       child: SizedBox(
@@ -605,7 +605,7 @@ class ClimateTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 65,
+              width: 86,
               height: boxHeight,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
