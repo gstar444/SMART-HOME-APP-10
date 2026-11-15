@@ -67,6 +67,14 @@ class _GateState extends State<_Gate> {
     _usernameFuture = _load();
   }
 
+  @override
+  void didUpdateWidget(covariant _Gate oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.user.uid != widget.user.uid) {
+      _usernameFuture = _load();
+    }
+  }
+
   /// इसी uid के अकाउंट का यूज़रनेम, और MQTT जानकारी फ़ोन में लोड।
   Future<String?> _load() async {
     final snap = await FirebaseFirestore.instance

@@ -29,6 +29,9 @@ Future<void> setLoginLanguage(bool hindi) async {
   await p.setBool('login_hindi', hindi);
 }
 
+String _t(BuildContext context, String hi, String en) =>
+    loginHindi.value ? hi : en;
+
 class _L {
   const _L(this.h);
   final bool h;
@@ -257,6 +260,19 @@ class _LoginPageState extends State<LoginPage> {
       );
       await cred.user?.reload();
       if (cred.user?.emailVerified ?? false) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                _t(
+                  context,
+                  'आपका अकाउंट बन चुका है',
+                  'Your account has been created',
+                ),
+              ),
+            ),
+          );
+        }
         _set(() {
           _awaitingVerify = false;
           _info = null;
