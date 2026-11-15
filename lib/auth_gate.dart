@@ -115,7 +115,11 @@ class _GateState extends State<_Gate> {
           );
         }
         if (snap.data == null) {
-          return UsernamePage(user: widget.user, onDone: _reload);
+          return UsernamePage(
+            user: widget.user,
+            onDone: _reload,
+            settings: widget.settings,
+          );
         }
         return DashboardPage(settings: widget.settings, esp: widget.home);
       },

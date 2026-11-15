@@ -28,6 +28,9 @@ import 'web_page.dart';
 import 'wifi_page.dart';
 
 /// Order in which control groups are shown. Unknown groups follow after these.
+String _pt(SettingsController sc, String hi, String en) =>
+    sc.value.hindi ? hi : en;
+
 const List<String> _groupOrder = ['Lighting', 'Climate', 'Security', 'Scenes'];
 
 /// Everything needed to draw one tile.
@@ -735,7 +738,7 @@ class _DashboardPageState extends State<DashboardPage> {
               AccountHeader(user: user),
               ListTile(
                 leading: const Icon(Icons.badge_outlined),
-                title: const Text('यूज़रनेम बदलें'),
+                title: Text(_pt(_sc, 'यूज़रनेम बदलें', 'Change username')),
                 subtitle: const Text('नया यूज़रनेम चुनें, पुराना तुरंत बंद'),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -746,8 +749,14 @@ class _DashboardPageState extends State<DashboardPage> {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.cloud_outlined),
-              title: const Text('MQTT सेटिंग'),
-              subtitle: const Text('एक बार भरें, अपने आप सेव रहेगी'),
+              title: Text(_pt(_sc, 'MQTT सेटिंग', 'MQTT settings')),
+              subtitle: Text(
+                _pt(
+                  _sc,
+                  'एक बार भरें, अपने आप सेव रहेगी',
+                  'Set once, saved automatically',
+                ),
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 Navigator.of(context).push(
@@ -762,7 +771,7 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             ListTile(
               leading: const Icon(Icons.logout),
-              title: const Text('लॉग आउट'),
+              title: Text(_pt(_sc, 'लॉग आउट', 'Log out')),
               onTap: () async {
                 Navigator.pop(ctx);
                 final nav = Navigator.of(context, rootNavigator: true);

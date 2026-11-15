@@ -2,13 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'settings.dart';
+
 const Color _bg = Color(0xFF121212);
 const Color _fieldBg = Color(0xFF232129);
 const Color _accent = Color(0xFFD0BCFF);
 const Color _onAccent = Color(0xFF381E72);
 const Color _muted = Color(0xFFCAC4D0);
 const Color _text = Color(0xFFE6E1E5);
-const Color _danger = Color(0xFFF2B8B5);
+Color _danger = Color(0xFFF2B8B5);
+
+String _ut(SettingsController sc, String hi, String en) =>
+    sc.value.hindi ? hi : en;
 
 final RegExp _usernameShape = RegExp(r'^[a-z0-9_]+(\.[a-z0-9_]+)*$');
 
@@ -23,10 +28,16 @@ String? usernameError(String raw) {
 }
 
 class UsernamePage extends StatefulWidget {
-  const UsernamePage({super.key, required this.user, required this.onDone});
+  const UsernamePage({
+    super.key,
+    required this.user,
+    required this.onDone,
+    required this.settings,
+  });
 
   final User user;
   final VoidCallback onDone;
+  final SettingsController settings;
 
   @override
   State<UsernamePage> createState() => _UsernamePageState();
@@ -60,7 +71,13 @@ class _UsernamePageState extends State<UsernamePage> {
       final existing = await ref.get();
       if (!mounted) return;
       if (existing.exists) {
-        setState(() => _error = 'यह यूज़रनेम पहले से किसी और का है');
+        setState(
+          () => _error = _ut(
+            widget.settings,
+            'यह यूज़रनेम पहले से किसी और का है',
+            'This username is already taken',
+          ),
+        );
         return;
       }
       await ref.set({'uid': widget.user.uid, 'email': widget.user.email});
@@ -69,7 +86,15 @@ class _UsernamePageState extends State<UsernamePage> {
       }, SetOptions(merge: true));
       if (mounted) widget.onDone();
     } catch (_) {
-      if (mounted) setState(() => _error = 'सेव नहीं हुआ, फिर कोशिश करें');
+      if (mounted) {
+        setState(
+          () => _error = _ut(
+            widget.settings,
+            'सेव नहीं हुआ, फिर कोशिश करें',
+            'Could not save, try again',
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -94,9 +119,9 @@ class _UsernamePageState extends State<UsernamePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'यूज़रनेम बनाएँ',
+            SizedBox(height: 16),
+            Text(
+              _ut(widget.settings, 'यूज़रनेम बनाएँ', 'Create username'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: _text,
@@ -104,9 +129,13 @@ class _UsernamePageState extends State<UsernamePage> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 6),
-            const Text(
-              'लॉगिन के लिए एक यूज़रनेम चुनें।',
+            SizedBox(height: 6),
+            Text(
+              _ut(
+                widget.settings,
+                'लॉगिन के लिए एक यूज़रनेम चुनें।',
+                'Pick a username for sign-in.',
+              ),
               textAlign: TextAlign.center,
               style: TextStyle(color: _muted, fontSize: 13),
             ),
@@ -114,9 +143,9 @@ class _UsernamePageState extends State<UsernamePage> {
             TextField(
               controller: _ctrl,
               enabled: !_busy,
-              style: const TextStyle(color: _text, fontSize: 15),
+              style: TextStyle(color: _text, fontSize: 15),
               decoration: InputDecoration(
-                labelText: 'यूज़रनेम',
+                labelText: _ut(widget.settings, 'यूज़रनेम', 'Username'),
                 hintText: 'ashish.home',
                 labelStyle: const TextStyle(color: _muted),
                 floatingLabelStyle: const TextStyle(color: _accent),
@@ -143,7 +172,7 @@ class _UsernamePageState extends State<UsernamePage> {
               Text(
                 _error!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: _danger, fontSize: 13),
+                style: TextStyle(color: _danger, fontSize: 13),
               ),
               const SizedBox(height: 12),
             ],
@@ -168,8 +197,12 @@ class _UsernamePageState extends State<UsernamePage> {
                           color: _onAccent,
                         ),
                       )
-                    : const Text(
-                        'यूज़रनेम सेव करें',
+                    : Text(
+                        _ut(
+                          widget.settings,
+                          'यूज़रनेम सेव करें',
+                          'Save username',
+                        ),
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
               ),
@@ -178,7 +211,10 @@ class _UsernamePageState extends State<UsernamePage> {
             Center(
               child: TextButton(
                 onPressed: _busy ? null : () => FirebaseAuth.instance.signOut(),
-                child: const Text('लॉग आउट', style: TextStyle(color: _muted)),
+                child: Text(
+                  _ut(widget.settings, 'लॉग आउट', 'Log out'),
+                  style: const TextStyle(color: _muted),
+                ),
               ),
             ),
           ],

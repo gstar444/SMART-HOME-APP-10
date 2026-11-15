@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'settings.dart';
+
 const Color _bg = Color(0xFF121212);
 const Color _fieldBg = Color(0xFF232129);
 const Color _accent = Color(0xFFD0BCFF);
@@ -12,8 +14,13 @@ const Color _danger = Color(0xFFF2B8B5);
 const Color _ok = Color(0xFF9FD8A6);
 
 /// पासवर्ड भूल गए: सिर्फ़ ईमेल या यूज़रनेम माँगता है और रीसेट लिंक ईमेल पर भेजता है।
+String _ft(SettingsController sc, String hi, String en) =>
+    sc.value.hindi ? hi : en;
+
 class ForgotPage extends StatefulWidget {
-  const ForgotPage({super.key});
+  const ForgotPage({super.key, required this.settings});
+
+  final SettingsController settings;
 
   @override
   State<ForgotPage> createState() => _ForgotPageState();
@@ -44,7 +51,13 @@ class _ForgotPageState extends State<ForgotPage> {
   Future<void> _send() async {
     final input = _ctrl.text.trim();
     if (input.isEmpty) {
-      setState(() => _error = 'ईमेल या यूज़रनेम डालें');
+      setState(
+        () => _error = _ft(
+          widget.settings,
+          'ईमेल या यूज़रनेम डालें',
+          'Enter email or username',
+        ),
+      );
       return;
     }
     setState(() {
@@ -55,7 +68,13 @@ class _ForgotPageState extends State<ForgotPage> {
       final email = await _emailFor(input);
       if (!mounted) return;
       if (email == null) {
-        setState(() => _error = 'यह यूज़रनेम नहीं मिला');
+        setState(
+          () => _error = _ft(
+            widget.settings,
+            'यह यूज़रनेम नहीं मिला',
+            'Username not found',
+          ),
+        );
         return;
       }
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
@@ -66,7 +85,15 @@ class _ForgotPageState extends State<ForgotPage> {
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _error = 'लिंक नहीं गया, फिर कोशिश करें');
+      if (mounted) {
+        setState(
+          () => _error = _ft(
+            widget.settings,
+            'लिंक नहीं गया, फिर कोशिश करें',
+            'Link not sent, try again',
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -86,8 +113,8 @@ class _ForgotPageState extends State<ForgotPage> {
                   icon: const Icon(Icons.arrow_back, color: _text),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
-                const Text(
-                  'पासवर्ड भूल गए?',
+                Text(
+                  _ft(widget.settings, 'पासवर्ड भूल गए?', 'Forgot password?'),
                   style: TextStyle(
                     color: _text,
                     fontSize: 18,
@@ -96,11 +123,15 @@ class _ForgotPageState extends State<ForgotPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            const Padding(
+            SizedBox(height: 16),
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                'अपना ईमेल या यूज़रनेम डालें। हम उस ईमेल पर पासवर्ड बदलने का लिंक भेजेंगे।',
+                _ft(
+                  widget.settings,
+                  'अपना ईमेल या यूज़रनेम डालें। हम उस ईमेल पर पासवर्ड बदलने का लिंक भेजेंगे।',
+                  'Enter your email or username. We will send a password reset link to that email.',
+                ),
                 style: TextStyle(color: _muted, fontSize: 13, height: 1.6),
               ),
             ),
@@ -109,9 +140,13 @@ class _ForgotPageState extends State<ForgotPage> {
               TextField(
                 controller: _ctrl,
                 enabled: !_busy,
-                style: const TextStyle(color: _text, fontSize: 15),
+                style: TextStyle(color: _text, fontSize: 15),
                 decoration: InputDecoration(
-                  labelText: 'ईमेल या यूज़रनेम',
+                  labelText: _ft(
+                    widget.settings,
+                    'ईमेल या यूज़रनेम',
+                    'Email or username',
+                  ),
                   labelStyle: const TextStyle(color: _muted),
                   floatingLabelStyle: const TextStyle(color: _accent),
                   prefixIcon: const Icon(Icons.mail_outline, color: _muted),
@@ -148,8 +183,8 @@ class _ForgotPageState extends State<ForgotPage> {
                       borderRadius: BorderRadius.circular(24),
                     ),
                   ),
-                  child: const Text(
-                    'लिंक भेजें',
+                  child: Text(
+                    _ft(widget.settings, 'लिंक भेजें', 'Send link'),
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -168,18 +203,22 @@ class _ForgotPageState extends State<ForgotPage> {
                       color: _ok,
                       size: 36,
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'लिंक भेज दिया गया',
+                    SizedBox(height: 8),
+                    Text(
+                      _ft(widget.settings, 'लिंक भेज दिया गया', 'Link sent'),
                       style: TextStyle(
                         color: _ok,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 6),
                     Text(
-                      '$_sentTo पर लिंक भेजा गया है। ईमेल खोलकर लिंक पर क्लिक करें। न मिले तो Spam फ़ोल्डर देखें।',
+                      _ft(
+                        widget.settings,
+                        '$_sentTo पर लिंक भेजा गया है। ईमेल खोलकर लिंक पर क्लिक करें। न मिले तो Spam फ़ोल्डर देखें।',
+                        'A link was sent to $_sentTo. Open the email and click the link. If not found, check Spam.',
+                      ),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: _muted,
@@ -203,7 +242,9 @@ class _ForgotPageState extends State<ForgotPage> {
                       borderRadius: BorderRadius.circular(24),
                     ),
                   ),
-                  child: const Text('लिंक फिर से भेजें'),
+                  child: Text(
+                    _ft(widget.settings, 'लिंक फिर से भेजें', 'Resend link'),
+                  ),
                 ),
               ),
             ],
@@ -211,8 +252,8 @@ class _ForgotPageState extends State<ForgotPage> {
             Center(
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  'लॉगिन पर वापस जाएँ',
+                child: Text(
+                  _ft(widget.settings, 'लॉगिन पर वापस जाएँ', 'Back to sign in'),
                   style: TextStyle(color: _accent),
                 ),
               ),

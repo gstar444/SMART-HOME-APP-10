@@ -427,7 +427,9 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: _busy
             ? null
             : () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const ForgotPage()),
+                MaterialPageRoute<void>(
+                  builder: (_) => ForgotPage(settings: widget.settings),
+                ),
               ),
         child: Text(
           l.t('पासवर्ड भूल गए?', 'Forgot password?'),
@@ -516,13 +518,29 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
               children: [
                 Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(22),
-                    child: Image.asset(
-                      'assets/images/app_logo.png',
-                      width: 84,
-                      height: 84,
-                      cacheWidth: 252,
+                  child: Container(
+                    width: 96,
+                    height: 96,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: _fieldBg,
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(color: _accent, width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.45),
+                          blurRadius: 22,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.asset(
+                        'assets/images/app_logo.png',
+                        fit: BoxFit.contain,
+                        cacheWidth: 300,
+                      ),
                     ),
                   ),
                 ),
