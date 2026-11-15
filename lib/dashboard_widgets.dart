@@ -450,13 +450,7 @@ class DeviceTile extends StatelessWidget {
     final radius = BorderRadius.circular(18);
 
     final Widget inside;
-    if (busy) {
-      inside = SizedBox(
-        width: 22,
-        height: 22,
-        child: CircularProgressIndicator(strokeWidth: 2.4, color: fg),
-      );
-    } else if (span == 1) {
+    if (span == 1) {
       inside = glyph(fg, boxHeight * 0.46);
     } else {
       inside = Row(

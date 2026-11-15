@@ -540,7 +540,7 @@ class _DashboardPageState extends State<DashboardPage> {
           active: d.on,
           outline: d.icon == 'heater',
           span: d.isLock ? 2 : 1,
-          busy: _esp.isBusy(d.id),
+          busy: false,
           onTap: d.controllable ? () => _toggle(d) : null,
           onLongPress: () => _deviceMenu(d),
         ),
@@ -576,7 +576,7 @@ class _DashboardPageState extends State<DashboardPage> {
         label: tr.dnd,
         caption: st.dnd ? tr.capOn : tr.capOff,
         active: st.dnd,
-        busy: _esp.isBusy('dnd'),
+        busy: false,
         onTap: () => _toggleDnd(st),
       ),
     );
@@ -594,7 +594,7 @@ class _DashboardPageState extends State<DashboardPage> {
         glyph: _shapeGlyph('candle'),
         label: tr.moodDinner,
         caption: tr.capRun,
-        busy: _esp.isBusy('scene:dinner'),
+        busy: false,
         onTap: () => _scene('dinner'),
       ),
     );
