@@ -627,52 +627,55 @@ class _DashboardPageState extends State<DashboardPage> {
         boxes.add(
           SizedBox(
             width: usable,
-            child: Row(
-              children: [
-                GroupBox(
-                  title: tr.climateTempTitle,
-                  width: half,
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    children: [
-                      for (final t in climate)
-                        ClimateTile(
-                          width: half - 26,
-                          label: t.label,
-                          tempText: t.caption ?? '—',
-                          humText: t.humText ?? '—',
-                          accent: accent,
-                          dim: dim,
-                        ),
-                    ],
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  GroupBox(
+                    title: tr.climateTempTitle,
+                    width: half,
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      children: [
+                        for (final t in climate)
+                          ClimateTile(
+                            width: half - 26,
+                            label: t.label,
+                            tempText: t.caption ?? '—',
+                            humText: t.humText ?? '—',
+                            accent: accent,
+                            dim: dim,
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 14),
-                GroupBox(
-                  title: tr.climateSecurityTitle,
-                  width: half,
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    children: [
-                      for (final t in camera)
-                        DeviceTile(
-                          width: tileWidth,
-                          glyph: t.glyph,
-                          label: t.label,
-                          caption: t.caption,
-                          accent: accent,
-                          active: t.active,
-                          outline: t.outline,
-                          busy: t.busy,
-                          span: t.span,
-                          dim: dim,
-                          onTap: t.onTap,
-                          onLongPress: t.onLongPress,
-                        ),
-                    ],
+                  const SizedBox(width: 14),
+                  GroupBox(
+                    title: tr.climateSecurityTitle,
+                    width: half,
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      children: [
+                        for (final t in camera)
+                          DeviceTile(
+                            width: tileWidth,
+                            glyph: t.glyph,
+                            label: t.label,
+                            caption: t.caption,
+                            accent: accent,
+                            active: t.active,
+                            outline: t.outline,
+                            busy: t.busy,
+                            span: t.span,
+                            dim: dim,
+                            onTap: t.onTap,
+                            onLongPress: t.onLongPress,
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
