@@ -552,7 +552,7 @@ class _DashboardPageState extends State<DashboardPage> {
         group: 'Climate',
         glyph: _iconGlyph(Icons.device_thermostat),
         label: tr.tempSensor,
-        caption: temp == null ? '—' : '${temp.round()}°C',
+        caption: temp == null ? '—' : '${temp.toStringAsFixed(1)}°C',
         climate: true,
         humText: hum == null ? '—' : tr.humidityText(hum.round()),
       ),

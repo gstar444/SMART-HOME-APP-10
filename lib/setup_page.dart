@@ -24,7 +24,7 @@ class _SetupPageState extends State<SetupPage> {
   final _user = TextEditingController();
   final _pass = TextEditingController();
   final _home = TextEditingController(text: 'home');
-  final _ip = TextEditingController(text: 'http://192.168.1.12/');
+  late final _ip = TextEditingController(text: widget.settings.value.activeUrl);
   bool _busy = false;
   String? _error;
 
