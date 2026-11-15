@@ -605,7 +605,7 @@ class ClimateTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 86,
+              width: 90,
               height: boxHeight,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
