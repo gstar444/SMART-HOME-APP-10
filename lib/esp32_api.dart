@@ -149,6 +149,7 @@ abstract interface class LocalBoard implements Listenable {
   bool get online;
   bool get loaded;
   String? get error;
+  bool get isAuthError;
   bool get hasToken;
 
   /// Id of the board this link talks to ('' until known).
@@ -248,6 +249,9 @@ class Esp32Controller extends ChangeNotifier
   bool get loaded => _loaded;
   @override
   String? get error => _error;
+  @override
+  bool get isAuthError => _authFailed;
+  bool _authFailed = false;
   @override
   bool get hasToken => _token != null && _token!.isNotEmpty;
   @override
@@ -381,6 +385,7 @@ class Esp32Controller extends ChangeNotifier
         _error = _friendly(e);
         // टोकन गलत हो तो 'ऑफ़लाइन' नहीं, साफ़ संदेश दिखाएँ (ESP32 तो चालू है)।
         final isAuth = e is ApiException && e.kind == ApiErrorKind.auth;
+        _authFailed = isAuth;
         if (_failures >= 2 && !isAuth) _online = false;
       }
     } finally {

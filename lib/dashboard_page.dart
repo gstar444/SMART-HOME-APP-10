@@ -1019,6 +1019,24 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  Widget _authBanner(Tr tr) {
+    return GlassCard(
+      padding: const EdgeInsets.fromLTRB(14, 10, 10, 10),
+      child: Row(
+        children: [
+          const Icon(Icons.key_off, color: Color(0xFFEF4444)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              _esp.error ?? tr.errAuth,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _offlineBanner(Tr tr) {
     return GlassCard(
       padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
@@ -1179,6 +1197,10 @@ class _DashboardPageState extends State<DashboardPage> {
                                     else ...[
                                       if (!_esp.online) ...[
                                         _offlineBanner(tr),
+                                        const SizedBox(height: 14),
+                                      ],
+                                      if (_esp.isAuthError) ...[
+                                        _authBanner(tr),
                                         const SizedBox(height: 14),
                                       ],
                                       _roomBar(tr, accent, room),

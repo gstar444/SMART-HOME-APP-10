@@ -110,6 +110,7 @@ class HomeController extends ChangeNotifier {
   bool get online => _anyAvailable;
   bool get loaded => local.loaded || _state != null;
   String? get error => _state == null ? (local.error ?? mqtt.error) : null;
+  bool get isAuthError => local.isAuthError;
   bool isBusy(String key) => _pending.contains(key) || local.isBusy(key);
   List<Map<String, double>> get samples => List.unmodifiable(_samples);
   List<BoardStatus> get boards => _boards;
