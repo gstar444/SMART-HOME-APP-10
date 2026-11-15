@@ -99,12 +99,6 @@ class _LoginPageState extends State<LoginPage> {
       if (e.code == 'account-not-found') {
         return 'इस ईमेल से अकाउंट नहीं मिला';
       }
-      if (e.code == 'account-not-found') {
-        return l.t(
-          'इस ईमेल से अकाउंट नहीं मिला',
-          'No account found with this email',
-        );
-      }
       return 'Error: ${e.code}';
     }
     return 'Error: $e';
@@ -276,29 +270,42 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  Future<void> _google(_L l) => _run(l, () async {
-    final gs = GoogleSignIn.instance;
-    await gs.initialize();
-    final account = await gs.authenticate();
-    final cred = await FirebaseAuth.instance.signInWithCredential(
-      GoogleAuthProvider.credential(idToken: account.authentication.idToken),
-    );
-    final user = cred.user;
-    final email = user?.email;
-    bool registered = false;
-    if (email != null) {
+  Future<void> _google(_L l) async {
+    setState(() {
+      _busy = true;
+      _error = null;
+      _info = null;
+    });
+    try {
+      final gs = GoogleSignIn.instance;
+      await gs.initialize();
+      final account = await gs.authenticate();
+      final email = account.email;
       final byEmail = await FirebaseFirestore.instance
           .collection('usernames')
           .where('email', isEqualTo: email)
           .limit(1)
           .get();
-      registered = byEmail.docs.isNotEmpty;
+      if (byEmail.docs.isEmpty) {
+        if (mounted) {
+          setState(
+            () => _error = l.t(
+              'इस ईमेल से अकाउंट नहीं मिला',
+              'No account found with this email',
+            ),
+          );
+        }
+        return;
+      }
+      await FirebaseAuth.instance.signInWithCredential(
+        GoogleAuthProvider.credential(idToken: account.authentication.idToken),
+      );
+    } catch (e) {
+      if (mounted) setState(() => _error = _msg(e, l));
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
-    if (!registered) {
-      await FirebaseAuth.instance.signOut();
-      throw FirebaseAuthException(code: 'account-not-found');
-    }
-  });
+  }
 
   Widget _tabs(List<String> labels, int selected, void Function(int) onPick) {
     return Container(
