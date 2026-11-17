@@ -178,6 +178,8 @@ abstract interface class LocalBoard implements Listenable {
     int? pin,
     String? roomId,
     int? watts,
+    int? switchPin,
+    bool clearSwitch = false,
   });
   Future<String?> deleteDevice(String id);
   Future<String?> upsertRoom(RoomInfo room);

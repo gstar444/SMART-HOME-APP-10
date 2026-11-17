@@ -470,6 +470,7 @@ class HomeController extends ChangeNotifier {
     required int pin,
     required int room,
     int? watts,
+    int? switchPin,
   }) {
     if (!local.online) return Future.value(_tr.localOnly);
     return local.addDevice(
@@ -478,6 +479,7 @@ class HomeController extends ChangeNotifier {
       pin: pin,
       roomId: _roomIdAt(room),
       watts: watts,
+      switchPin: switchPin,
     );
   }
 
@@ -488,6 +490,8 @@ class HomeController extends ChangeNotifier {
     int? pin,
     int? room,
     int? watts,
+    int? switchPin,
+    bool clearSwitch = false,
   }) {
     final sp = splitCompositeId(id);
     if (sp == null) return Future.value(_tr.notConnected);
@@ -500,9 +504,13 @@ class HomeController extends ChangeNotifier {
         pin: pin,
         roomId: roomId,
         watts: watts,
+        switchPin: switchPin,
+        clearSwitch: clearSwitch,
       );
     }
-    if (pin != null || watts != null) return Future.value(_tr.localOnly);
+    if (pin != null || watts != null || switchPin != null || clearSwitch) {
+      return Future.value(_tr.localOnly);
+    }
     return _remote(sp.board, {
       'op': 'device.update',
       'dev': sp.device,
