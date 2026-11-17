@@ -81,6 +81,8 @@ const char* parseDeviceJson(JsonObjectConst o, const CfgDevice* base, bool trust
     long p = jInt(o["pin"], -1);
     if (p < -1 || p > 255) return "pin_range";
     d.pin = (int16_t)p;
+  } else if (!base) {
+    return "pin_required";   // नया device बिना pin नंबर के
   }
   if (jIsInt(o["switchPin"])) {
     long sp = jInt(o["switchPin"], -1);
