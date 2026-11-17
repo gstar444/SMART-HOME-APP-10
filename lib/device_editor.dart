@@ -19,12 +19,14 @@ class DeviceDraft {
     required this.pin,
     required this.room,
     this.watts,
+    this.switchPin,
   });
 
   final String name;
   final String icon;
   final int pin;
   final int room;
+  final int? switchPin;
   final int? watts; // null = let the ESP32 pick a default for the icon
 }
 
@@ -79,6 +81,7 @@ class _DeviceEditorDialogState extends State<_DeviceEditorDialog> {
   late String _icon;
   late int _room;
   int? _pin;
+  int? _switchPin;
   bool _nameTouched = false;
   String? _nameError;
   String? _pinError;
@@ -102,6 +105,7 @@ class _DeviceEditorDialogState extends State<_DeviceEditorDialog> {
       text: (d != null && d.watts > 0) ? d.watts.round().toString() : '',
     );
     _pin = (d != null && d.pin >= 0) ? d.pin : _firstFreePin();
+    _switchPin = d?.switchPin;
   }
 
   @override
@@ -182,6 +186,7 @@ class _DeviceEditorDialogState extends State<_DeviceEditorDialog> {
         pin: pin,
         room: _room,
         watts: isSwitch ? watts : null,
+        switchPin: _switchPin,
       ),
     );
   }
@@ -294,6 +299,42 @@ class _DeviceEditorDialogState extends State<_DeviceEditorDialog> {
                       });
                     }
                   },
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            InputDecorator(
+              decoration: InputDecoration(
+                labelText: 'मैनुअल स्विच (GPIO)',
+                border: const OutlineInputBorder(),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<int?>(
+                  isExpanded: true,
+                  value: _switchPin,
+                  hint: const Text('None'),
+                  items: [
+                    const DropdownMenuItem<int?>(
+                      value: null,
+                      child: Text('None'),
+                    ),
+                    for (final p in pins.where((x) => x != _pin))
+                      DropdownMenuItem<int?>(
+                        value: p,
+                        enabled: !used.containsKey(p),
+                        child: Text(
+                          used.containsKey(p)
+                              ? 'GPIO $p  ·  In use: ${used[p] ?? ''}'
+                              : 'GPIO $p',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
+                  onChanged: (v) => setState(() => _switchPin = v),
                 ),
               ),
             ),

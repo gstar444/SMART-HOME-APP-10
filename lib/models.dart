@@ -34,6 +34,7 @@ class Esp32Device {
     this.watts = 0,
     this.wh = 0,
     this.pin = -1,
+    this.switchPin,
     this.boardId = '',
     this.available = true,
     this.remoteAllowed = true,
@@ -52,6 +53,7 @@ class Esp32Device {
   final double watts; // typical load, used for the energy estimate
   final double wh; // energy used since the ESP32 booted
   final int pin; // GPIO pin, -1 = unknown (not sent over MQTT)
+  final int? switchPin; // manual switch GPIO, null = none
   final String boardId;
 
   /// False while the board is offline/stale or the device is disabled or on an unusable pin.
