@@ -84,6 +84,7 @@ class FakeLocal extends ChangeNotifier implements LocalBoard {
     required int pin,
     required String roomId,
     int? watts,
+    int? switchPin,
   }) async {
     calls.add('add:$name:$pin:$roomId');
     return null;

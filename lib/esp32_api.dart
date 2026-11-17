@@ -169,6 +169,7 @@ abstract interface class LocalBoard implements Listenable {
     required int pin,
     required String roomId,
     int? watts,
+    int? switchPin,
   });
   Future<String?> updateDevice(
     String id, {
@@ -481,12 +482,14 @@ class Esp32Controller extends ChangeNotifier
     required int pin,
     required String roomId,
     int? watts,
+    int? switchPin,
   }) => _write('device/add', {
     'name': name,
     'icon': icon,
     'pin': pin,
     'room': roomId,
     'watts': ?watts,
+    'switchPin': ?switchPin,
   }, busyKey: 'device:add');
 
   @override
@@ -497,6 +500,8 @@ class Esp32Controller extends ChangeNotifier
     int? pin,
     String? roomId,
     int? watts,
+    int? switchPin,
+    bool clearSwitch = false,
   }) => _write('device/update', {
     'id': _raw(id),
     'name': ?name,
@@ -504,6 +509,7 @@ class Esp32Controller extends ChangeNotifier
     'pin': ?pin,
     'room': ?roomId,
     'watts': ?watts,
+    'switchPin': ?(clearSwitch ? null : switchPin),
   }, busyKey: id);
 
   @override
