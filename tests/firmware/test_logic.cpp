@@ -252,6 +252,7 @@ static CfgDevice mkDev(const char* id, const char* icon, int pin) {
   copyStr(d.icon, sizeof(d.icon), icon); copyStr(d.type, sizeof(d.type), typeForIcon(icon));
   copyStr(d.group, sizeof(d.group), groupForIcon(icon));
   d.pin = (int16_t)pin; d.enabled = true; d.remote = true; d.watts = defaultWatts(icon);
+  d.switchPin = -1;   // no manual switch unless a test sets one
   d.invert = !strcmp(icon, "lock");
   return d;
 }
