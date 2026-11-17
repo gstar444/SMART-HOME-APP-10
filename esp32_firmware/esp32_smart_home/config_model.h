@@ -438,9 +438,6 @@ inline const char* validateDeviceStrict(const Config& c, const CfgDevice& d, int
     if (i == selfIdx) continue;
     if (!strcmp(c.devices[i].id, d.id)) return "device_id_duplicate";
     if (c.devices[i].pin == d.pin) return "pin_duplicate";
-    if (d.switchPin >= 0 && (c.devices[i].pin == d.switchPin || c.devices[i].switchPin == d.switchPin))
-      return "switch_pin_duplicate";
-    if (d.switchPin >= 0 && d.switchPin == d.pin) return "switch_pin_duplicate";
   }
   if (strcmp(d.type, "switch") && strcmp(d.type, "lock") && strcmp(d.type, "pir")) return "device_type";
   if (!iconKnown(d.icon)) return "device_icon";
@@ -457,6 +454,14 @@ inline const char* validateDeviceStrict(const Config& c, const CfgDevice& d, int
   bool ok = isInput ? pinUsableAsInput(t, psram, d.pin, d.riskyPinOk)
                     : pinUsableAsOutput(t, psram, d.pin, d.riskyPinOk);
   if (!ok) return "pin_not_allowed";
+  if (d.switchPin >= 0) {
+    if (d.switchPin == d.pin) return "switch_pin_duplicate";
+    for (int j = 0; j < c.nDevices; j++) {
+      if (j == selfIdx) continue;
+      if (c.devices[j].pin == d.switchPin || c.devices[j].switchPin == d.switchPin)
+        return "switch_pin_duplicate";
+    }
+  }
   return nullptr;
 }
 
