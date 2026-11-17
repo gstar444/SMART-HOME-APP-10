@@ -109,6 +109,7 @@ void devicesReconcile() {
     r.pin = d.pin;
     r.initialised = true;
     r.pinFault = fault != nullptr;
+    if (d.switchPin >= 0) pinMode(d.switchPin, INPUT_PULLUP);   // manual switch: idle HIGH, press = LOW (always, even if device is off)
     bool want = d.enabled && !r.pinFault;
     if (want && !r.driven) initPin(i);
     else if (want && r.driven && r.isOutput) applyOutput(i);   // polarity/invert may have changed
@@ -232,6 +233,19 @@ static void touchTick(uint32_t now) {
 
 void devTick(uint32_t now) {
   touchTick(now);
+  // Manual switches (wired to GPIO, read as INPUT_PULLUP): a press toggles the device.
+  static bool swLast[MAX_DEVICES];
+  static uint32_t swChangedMs[MAX_DEVICES];
+  for (int i = 0; i < cfg.nDevices; i++) {
+    const CfgDevice& d = cfg.devices[i];
+    if (d.switchPin < 0 || !rt[i].driven) continue;
+    bool pressed = digitalRead(d.switchPin) == LOW;
+    if (pressed == swLast[i]) continue;
+    if ((uint32_t)(now - swChangedMs[i]) < 50UL) continue;   // debounce 50 ms
+    swLast[i] = pressed;
+    swChangedMs[i] = now;
+    if (pressed) devSet(i, !rt[i].on, false);   // toggle on each press
+  }
   // PIR inputs
   for (int i = 0; i < cfg.nDevices; i++) {
     if (!rt[i].driven || strcmp(cfg.devices[i].type, "pir") != 0) continue;
