@@ -81,8 +81,13 @@ const char* parseDeviceJson(JsonObjectConst o, const CfgDevice* base, bool trust
     long p = jInt(o["pin"], -1);
     if (p < -1 || p > 255) return "pin_range";
     d.pin = (int16_t)p;
+  }
+  if (jIsInt(o["switchPin"])) {
+    long sp = jInt(o["switchPin"], -1);
+    if (sp < -1 || sp > 255) return "switch_pin_range";
+    d.switchPin = (int16_t)sp;
   } else if (!base) {
-    return "pin_required";
+    d.switchPin = -1;   // नया device: कोई स्विच नहीं, यह ठीक है
   }
   bool isLock = !strcmp(d.type, "lock");
   d.invert = jBool(o["invert"], base ? d.invert : isLock);
@@ -206,6 +211,7 @@ void deviceToJson(JsonObject o, const CfgDevice& d) {
   o["icon"] = (const char*)d.icon;
   o["room"] = (const char*)d.room;
   o["pin"] = d.pin;
+  o["switchPin"] = d.switchPin;
   o["invert"] = d.invert;
   o["enabled"] = d.enabled;
   o["remote"] = d.remote;
