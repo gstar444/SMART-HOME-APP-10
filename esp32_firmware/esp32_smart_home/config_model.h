@@ -456,6 +456,7 @@ inline const char* validateDeviceStrict(const Config& c, const CfgDevice& d, int
   if (!ok) return "pin_not_allowed";
   if (d.switchPin >= 0) {
     if (d.switchPin == d.pin) return "switch_pin_duplicate";
+    if (!pinUsableAsInput(t, psram, d.switchPin, false)) return "switch_pin_not_allowed";
     for (int j = 0; j < c.nDevices; j++) {
       if (j == selfIdx) continue;
       if (c.devices[j].pin == d.switchPin || c.devices[j].switchPin == d.switchPin)
