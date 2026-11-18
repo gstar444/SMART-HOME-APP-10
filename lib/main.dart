@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,6 +61,10 @@ Future<void> main() async {
   unawaited(() async {
     final cloud = await cloudSettings;
     if (cloud != null) await mqtt.configure(cloud);
+    Connectivity().onConnectivityChanged.listen((_) async {
+      final c = await store.loadCloud();
+      if (c != null) await mqtt.configure(c);
+    });
   }());
 }
 
