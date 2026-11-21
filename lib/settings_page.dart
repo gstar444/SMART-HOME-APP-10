@@ -549,7 +549,20 @@ Future<Device?> _editDevice(BuildContext context, Tr tr, Device? existing) {
                         onPressed: () async {
                           refresh(() => searching = true);
                           final esp = context.read<Esp32Controller>();
-                          final found = await esp.findUrl();
+                          String? found;
+                          // फ़ोन के network पर बार-बार खोजें, पहला सही IP मिलते ही रुकें।
+                          for (
+                            var attempt = 0;
+                            attempt < 4 && found == null;
+                            attempt++
+                          ) {
+                            found = await esp.findUrl();
+                            if (found == null && attempt < 3) {
+                              await Future<void>.delayed(
+                                const Duration(seconds: 2),
+                              );
+                            }
+                          }
                           refresh(() {
                             searching = false;
                             if (found != null) {
