@@ -65,6 +65,10 @@ class Tr {
     'ESP32 नहीं मिला। IP हाथ से डालें।',
     'ESP32 not found. Enter the IP manually.',
   );
+  String get sameWifiHint => _t(
+    'फ़ोन और ESP32 एक ही Wi-Fi पर होने चाहिए।',
+    'Phone and ESP32 must be on the same Wi-Fi.',
+  );
   String get deviceUrlHint => 'http://192.168.1.37/';
   String get invalidUrl => _t(
     'सही IP या http/https URL डालें।',

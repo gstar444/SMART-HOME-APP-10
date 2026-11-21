@@ -556,7 +556,8 @@ Future<Device?> _editDevice(BuildContext context, Tr tr, Device? existing) {
                               url.text = found;
                               urlError = null;
                             } else {
-                              urlError = tr.deviceNotFound;
+                              urlError =
+                                  '${tr.deviceNotFound}\n${tr.sameWifiHint}';
                             }
                           });
                         },
