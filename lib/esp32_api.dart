@@ -650,7 +650,10 @@ class Esp32Controller extends ChangeNotifier
   /// Finds the board's current address on the network (mDNS, then subnet scan).
   /// Returns a URL like http://192.168.0.110/, or null if nothing answers.
   Future<String?> findUrl() async {
-    final racers = <Future<String?>>[_discoverByMdns(), _scanSubnet(_settings.value.activeUrl)];
+    final racers = <Future<String?>>[
+      _discoverByMdns(),
+      _scanSubnet(_settings.value.activeUrl),
+    ];
     final found = await _firstNonNull(racers);
     return found;
   }
@@ -716,16 +719,19 @@ class Esp32Controller extends ChangeNotifier
     final parts = base.split('.');
     if (parts.length != 4) return null;
     final prefix = '${parts[0]}.${parts[1]}.${parts[2]}';
+    // पहले सेव IP के आसपास के सबसे संभावित पते, फिर बाकी।
+    final last = int.tryParse(parts[3]) ?? 1;
+    final order = <int>[
+      for (var d = 0; d <= 20; d++) ...[last + d, last - d],
+      for (var i = 1; i <= 254; i++) i,
+    ].where((i) => i >= 1 && i <= 254).toSet().toList();
     final futures = <Future<String?>>[];
-    for (var i = 1; i <= 254; i++) {
+    for (final i in order) {
       final url = 'http://$prefix.$i/';
       futures.add(_isBoard(url).then((ok) => ok ? url : null));
     }
-    final results = await Future.wait(futures);
-    for (final r in results) {
-      if (r != null) return r;
-    }
-    return null;
+    // पहला सही जवाब मिलते ही लौट आएँ, बाकी का इंतज़ार न करें।
+    return _firstNonNull(futures);
   }
 
   Future<bool> _reachable(String url) async {
