@@ -60,6 +60,11 @@ class Tr {
   String get editDevice => _t('डिवाइस बदलें', 'Edit device');
   String get deviceName => _t('डिवाइस का नाम', 'Device name');
   String get deviceUrl => _t('ESP32 URL या IP', 'ESP32 URL or IP');
+  String get searchDevice => _t('खोजें', 'Search');
+  String get deviceNotFound => _t(
+    'ESP32 नहीं मिला। IP हाथ से डालें।',
+    'ESP32 not found. Enter the IP manually.',
+  );
   String get deviceUrlHint => 'http://192.168.1.37/';
   String get invalidUrl => _t(
     'सही IP या http/https URL डालें।',

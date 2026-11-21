@@ -510,6 +510,7 @@ Future<Device?> _editDevice(BuildContext context, Tr tr, Device? existing) {
   final url = TextEditingController(text: existing?.url ?? '');
   String? nameError;
   String? urlError;
+  bool searching = false;
   return showDialog<Device>(
     context: context,
     builder: (ctx) => StatefulBuilder(
@@ -535,6 +536,32 @@ Future<Device?> _editDevice(BuildContext context, Tr tr, Device? existing) {
                 hintText: tr.deviceUrlHint,
                 errorText: urlError,
                 border: const OutlineInputBorder(),
+                suffixIcon: searching
+                    ? const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : TextButton(
+                        onPressed: () async {
+                          refresh(() => searching = true);
+                          final esp = context.read<Esp32Controller>();
+                          final found = await esp.findUrl();
+                          refresh(() {
+                            searching = false;
+                            if (found != null) {
+                              url.text = found;
+                              urlError = null;
+                            } else {
+                              urlError = tr.deviceNotFound;
+                            }
+                          });
+                        },
+                        child: Text(tr.searchDevice),
+                      ),
               ),
             ),
           ],

@@ -647,6 +647,14 @@ class Esp32Controller extends ChangeNotifier
     return url;
   }
 
+  /// Finds the board's current address on the network (mDNS, then subnet scan).
+  /// Returns a URL like http://192.168.0.110/, or null if nothing answers.
+  Future<String?> findUrl() async {
+    final racers = <Future<String?>>[_discoverByMdns(), _scanSubnet(_settings.value.activeUrl)];
+    final found = await _firstNonNull(racers);
+    return found;
+  }
+
   Future<String> _resolveUrlUncached() async {
     final saved = _settings.value.activeUrl;
     // Fast path: the saved address answers quickly on a normal network.
