@@ -716,9 +716,35 @@ class Esp32Controller extends ChangeNotifier
     }
   }
 
+  /// फ़ोन जिस Wi-Fi से जुड़ा है, उसका IPv4 prefix (जैसे 192.168.1)। न मिले तो null।
+  static Future<String?> _phonePrefix() async {
+    try {
+      final ifaces = await NetworkInterface.list(
+        type: InternetAddressType.IPv4,
+      );
+      for (final i in ifaces) {
+        for (final a in i.addresses) {
+          final ip = a.address;
+          final p = ip.split('.');
+          if (p.length != 4) continue;
+          final first = int.tryParse(p[0]) ?? 0;
+          final second = int.tryParse(p[1]) ?? 0;
+          final priv =
+              first == 192 && second == 168 ||
+              first == 10 ||
+              (first == 172 && second >= 16 && second <= 31);
+          if (priv) return '${p[0]}.${p[1]}.${p[2]}';
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
   Future<String?> _scanSubnet(String saved) async {
+    // खोज हमेशा फ़ोन के Wi-Fi network पर; सेव URL सिर्फ़ fallback है।
+    final phone = await _phonePrefix();
     final base = Uri.tryParse(saved)?.host ?? '';
-    final parts = base.split('.');
+    final parts = (phone != null ? '$phone.0' : base).split('.');
     if (parts.length != 4) return null;
     final prefix = '${parts[0]}.${parts[1]}.${parts[2]}';
     // पहले सेव IP के आसपास के सबसे संभावित पते, फिर बाकी।
