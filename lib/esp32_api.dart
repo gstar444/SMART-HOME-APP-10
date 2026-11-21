@@ -150,6 +150,7 @@ abstract interface class LocalBoard implements Listenable {
   bool get loaded;
   String? get error;
   bool get isAuthError;
+  Future<String?> findUrl();
   bool get hasToken;
 
   /// Id of the board this link talks to ('' until known).
@@ -649,6 +650,7 @@ class Esp32Controller extends ChangeNotifier
 
   /// Finds the board's current address on the network (mDNS, then subnet scan).
   /// Returns a URL like http://192.168.0.110/, or null if nothing answers.
+  @override
   Future<String?> findUrl() async {
     final racers = <Future<String?>>[
       _discoverByMdns(),

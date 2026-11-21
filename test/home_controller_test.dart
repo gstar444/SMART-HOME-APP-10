@@ -44,6 +44,8 @@ class FakeLocal extends ChangeNotifier implements LocalBoard {
   @override
   bool get isAuthError => false;
   @override
+  Future<String?> findUrl() async => null;
+  @override
   bool get hasToken => true;
   @override
   String get boardId => _state?.board ?? '';
