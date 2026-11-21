@@ -534,6 +534,7 @@ Future<Device?> _editDevice(BuildContext context, Tr tr, Device? existing) {
               decoration: InputDecoration(
                 labelText: tr.deviceUrl,
                 hintText: tr.deviceUrlHint,
+                helperText: tr.sameWifiHint,
                 errorText: urlError,
                 border: const OutlineInputBorder(),
                 suffixIcon: searching
